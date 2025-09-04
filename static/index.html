@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Story & Poem Generator</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">✨ Creative Generator ✨</h1>
+            <p class="subtitle">Generate amazing stories and poems with AI</p>
+        </header>
+
+        <div class="content">
+            <div class="input-section">
+                <form id="generatorForm" class="form">
+                    <div class="form-group">
+                        <label for="topic">Topic</label>
+                        <input type="text" id="topic" placeholder="e.g., space adventure, lost cat, magical forest" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="style">Style</label>
+                        <select id="style" required>
+                            <option value="">Choose a style...</option>
+                            <option value="funny">😄 Funny</option>
+                            <option value="scary">👻 Scary</option>
+                            <option value="romantic">💕 Romantic</option>
+                            <option value="mysterious">🔍 Mysterious</option>
+                            <option value="adventurous">⚡ Adventurous</option>
+                            <option value="heartwarming">🌟 Heartwarming</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contentType">Content Type</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="contentType" value="story" checked>
+                                <span class="radio-custom"></span>
+                                📖 Story
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="contentType" value="poem">
+                                <span class="radio-custom"></span>
+                                🎭 Poem
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="generate-btn" id="generateBtn">
+                        <span class="btn-text">Generate Magic</span>
+                        <div class="btn-loader" id="btnLoader"></div>
+                    </button>
+                </form>
+            </div>
+
+            <div class="output-section">
+                <div id="outputCard" class="output-card hidden">
+                    <div class="card-header">
+                        <h3 id="outputTitle">Your Creation</h3>
+                        <button id="regenerateBtn" class="regenerate-btn" title="Generate another version">
+                            🔄
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div id="outputContent" class="output-content"></div>
+                        <div class="output-meta">
+                            <span id="outputMeta" class="meta-text"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="errorCard" class="error-card hidden">
+                    <h3>Oops! Something went wrong</h3>
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Powered by Google Gemini AI & FastAPI ⚡</p>
+    </footer>
+
+    <script src="static/script.js"></script>
+</body>
+</html>
