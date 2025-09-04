@@ -17,6 +17,21 @@ class CreativeGenerator {
         this.form.addEventListener('submit', (e) => this.handleGenerate(e));
         this.regenerateBtn.addEventListener('click', () => this.handleRegenerate());
         
+        // Advanced options toggle
+        const advancedToggle = document.getElementById('advancedToggle');
+        const advancedOptions = document.getElementById('advancedOptions');
+        advancedToggle.addEventListener('click', () => this.toggleAdvancedOptions());
+        
+        // Style selection change
+        const styleSelect = document.getElementById('style');
+        styleSelect.addEventListener('change', () => this.handleStyleChange());
+        
+        // Content type change
+        const contentTypeRadios = document.querySelectorAll('input[name="contentType"]');
+        contentTypeRadios.forEach(radio => {
+            radio.addEventListener('change', () => this.handleContentTypeChange());
+        });
+        
         // Add input animations
         const inputs = document.querySelectorAll('input, select');
         inputs.forEach(input => {
@@ -30,21 +45,108 @@ class CreativeGenerator {
         });
     }
 
+    toggleAdvancedOptions() {
+        const toggleBtn = document.getElementById('advancedToggle');
+        const advancedOptions = document.getElementById('advancedOptions');
+        
+        if (advancedOptions.classList.contains('hidden')) {
+            advancedOptions.classList.remove('hidden');
+            setTimeout(() => {
+                advancedOptions.classList.add('show');
+            }, 10);
+            toggleBtn.classList.add('active');
+        } else {
+            advancedOptions.classList.remove('show');
+            toggleBtn.classList.remove('active');
+            setTimeout(() => {
+                advancedOptions.classList.add('hidden');
+            }, 300);
+        }
+    }
+
+    handleStyleChange() {
+        const styleSelect = document.getElementById('style');
+        const customStyleGroup = document.getElementById('customStyleGroup');
+        
+        if (styleSelect.value === 'custom') {
+            customStyleGroup.style.display = 'flex';
+            customStyleGroup.style.flexDirection = 'column';
+            customStyleGroup.style.gap = '0.5rem';
+        } else {
+            customStyleGroup.style.display = 'none';
+        }
+    }
+
+    handleContentTypeChange() {
+        const contentType = document.querySelector('input[name="contentType"]:checked').value;
+        const lengthLabel = document.getElementById('lengthLabel');
+        const lengthHelp = document.getElementById('lengthHelp');
+        const authorLabel = document.getElementById('authorLabel');
+        const authorHelp = document.getElementById('authorHelp');
+        const lengthInput = document.getElementById('length');
+        
+        if (contentType === 'poem') {
+            lengthLabel.textContent = 'Number of Lines';
+            lengthHelp.textContent = 'Recommended: 12-16 lines for poems';
+            lengthInput.placeholder = '12';
+            lengthInput.min = '4';
+            lengthInput.max = '50';
+            lengthInput.step = '1';
+            
+            authorLabel.textContent = 'Poet Style';
+            authorHelp.textContent = 'Write in the style of this poet';
+        } else {
+            lengthLabel.textContent = 'Number of Words';
+            lengthHelp.textContent = 'Recommended: 150-200 words for stories';
+            lengthInput.placeholder = '150';
+            lengthInput.min = '50';
+            lengthInput.max = '1000';
+            lengthInput.step = '10';
+            
+            authorLabel.textContent = 'Author Style';
+            authorHelp.textContent = 'Write in the style of this author';
+        }
+    }
+
     async handleGenerate(event) {
         event.preventDefault();
         
         if (this.isGenerating) return;
         
         const formData = new FormData(this.form);
+        
+        // Get basic fields
+        let style = formData.get('style');
+        if (style === 'custom') {
+            const customStyle = formData.get('customStyle');
+            if (!customStyle || !customStyle.trim()) {
+                this.showError('Please enter a custom style');
+                return;
+            }
+            style = customStyle.trim();
+        }
+        
+        // Handle length field - convert to integer or null
+        const lengthValue = formData.get('length');
+        const length = lengthValue && lengthValue.trim() ? parseInt(lengthValue) : null;
+        
+        // Handle author field - convert empty string to null
+        const authorValue = formData.get('author');
+        const author = authorValue && authorValue.trim() ? authorValue.trim() : null;
+        
         const request = {
             topic: formData.get('topic').trim(),
-            style: formData.get('style'),
-            content_type: formData.get('contentType')
+            style: style,
+            content_type: formData.get('contentType'),
+            // Advanced options
+            language: formData.get('language') || 'english',
+            length: length,
+            author: author
         };
 
-        // Validate form
+        // Validate required fields
         if (!request.topic || !request.style || !request.content_type) {
-            this.showError('Please fill in all fields');
+            this.showError('Please fill in all required fields');
             return;
         }
 
@@ -71,8 +173,26 @@ class CreativeGenerator {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || `HTTP ${response.status}`);
+                let errorMessage = `HTTP ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    if (response.status === 422) {
+                        // Handle validation errors
+                        if (errorData.detail && Array.isArray(errorData.detail)) {
+                            errorMessage = errorData.detail.map(err => err.msg).join(', ');
+                        } else if (errorData.detail) {
+                            errorMessage = errorData.detail;
+                        } else {
+                            errorMessage = 'Validation error. Please check your input values.';
+                        }
+                    } else {
+                        errorMessage = errorData.detail || errorMessage;
+                    }
+                } catch (e) {
+                    // If we can't parse the error response, use the status
+                    console.error('Error parsing error response:', e);
+                }
+                throw new Error(errorMessage);
             }
 
             const data = await response.json();

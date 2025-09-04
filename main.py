@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+from typing import Optional
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
@@ -32,6 +33,9 @@ class StoryRequest(BaseModel):
     topic: str
     style: str
     content_type: str  # "story" or "poem"
+    language: str = "english"
+    length: Optional[int] = None
+    author: Optional[str] = None
 
 class StoryResponse(BaseModel):
     content: str
@@ -48,16 +52,39 @@ async def read_root():
 async def generate_content(request: StoryRequest):
     """Generate a story or poem using Gemini API"""
     try:
+        # Build prompt components
+        language_instruction = f"Write in {request.language}" if request.language != "english" else ""
+        length_instruction = ""
+        author_instruction = ""
+        
+        if request.length:
+            if request.content_type == "poem":
+                length_instruction = f"Make it approximately {request.length} lines long."
+            else:
+                length_instruction = f"Make it approximately {request.length} words long."
+        else:
+            if request.content_type == "poem":
+                length_instruction = "Make it approximately 12-16 lines long."
+            else:
+                length_instruction = "Make it approximately 150-200 words long."
+        
+        if request.author:
+            author_instruction = f"Write in the style of {request.author}."
+        
         # Construct the prompt based on content type and style
         if request.content_type == "poem":
-            prompt = f"""Write a {request.style} poem about {request.topic}. 
-            Make it engaging, creative, and approximately 12-16 lines long. 
-            Use vivid imagery and appropriate tone for the {request.style} style."""
+            prompt = f"""{language_instruction} Write a {request.style} poem about {request.topic}. 
+            {length_instruction} 
+            Use vivid imagery and appropriate tone for the {request.style} style.
+            {author_instruction}
+            Make it engaging and creative.""".strip()
         else:
-            prompt = f"""Write a {request.style} short story about {request.topic}. 
-            Make it engaging, creative, and approximately 150-200 words long. 
+            prompt = f"""{language_instruction} Write a {request.style} short story about {request.topic}. 
+            {length_instruction} 
             Include interesting characters and a clear beginning, middle, and end. 
-            Use appropriate tone for the {request.style} style."""
+            Use appropriate tone for the {request.style} style.
+            {author_instruction}
+            Make it engaging and creative.""".strip()
         
         # Generate content using Gemini
         response = model.generate_content(prompt)

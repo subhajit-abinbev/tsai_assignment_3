@@ -32,7 +32,13 @@
                             <option value="mysterious">🔍 Mysterious</option>
                             <option value="adventurous">⚡ Adventurous</option>
                             <option value="heartwarming">🌟 Heartwarming</option>
+                            <option value="custom">✨ Custom Style</option>
                         </select>
+                    </div>
+
+                    <div class="form-group" id="customStyleGroup" style="display: none;">
+                        <label for="customStyle">Custom Style</label>
+                        <input type="text" id="customStyle" name="customStyle" placeholder="e.g., philosophical, noir, steampunk, minimalist">
                     </div>
 
                     <div class="form-group">
@@ -51,6 +57,46 @@
                         </div>
                     </div>
 
+                    <!-- Advanced Options Toggle -->
+                    <div class="advanced-toggle">
+                        <button type="button" id="advancedToggle" class="toggle-btn">
+                            <span class="toggle-icon">⚙️</span>
+                            <span class="toggle-text">Advanced Options</span>
+                            <span class="toggle-arrow">▼</span>
+                        </button>
+                    </div>
+
+                    <!-- Advanced Options Section -->
+                    <div id="advancedOptions" class="advanced-options hidden">
+                        <div class="form-group">
+                            <label for="language">Language</label>
+                            <select id="language" name="language">
+                                <option value="english">🇺🇸 English</option>
+                                <option value="spanish">🇪🇸 Spanish</option>
+                                <option value="french">🇫🇷 French</option>
+                                <option value="german">🇩🇪 German</option>
+                                <option value="italian">🇮🇹 Italian</option>
+                                <option value="portuguese">🇵🇹 Portuguese</option>
+                                <option value="russian">🇷🇺 Russian</option>
+                                <option value="japanese">🇯🇵 Japanese</option>
+                                <option value="chinese">🇨🇳 Chinese</option>
+                                <option value="hindi">🇮🇳 Hindi</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="lengthGroup">
+                            <label for="length" id="lengthLabel">Number of Words</label>
+                            <input type="number" id="length" name="length" placeholder="150" min="50" max="1000" step="10">
+                            <small class="help-text" id="lengthHelp">Recommended: 150-200 words for stories</small>
+                        </div>
+
+                        <div class="form-group" id="authorGroup">
+                            <label for="author" id="authorLabel">Author Style</label>
+                            <input type="text" id="author" name="author" placeholder="e.g., Ernest Hemingway, Agatha Christie">
+                            <small class="help-text" id="authorHelp">Write in the style of this author</small>
+                        </div>
+                    </div>
+
                     <button type="submit" class="generate-btn" id="generateBtn">
                         <span class="btn-text">Generate Magic</span>
                         <div class="btn-loader" id="btnLoader"></div>
@@ -63,7 +109,7 @@
                     <div class="card-header">
                         <h3 id="outputTitle">Your Creation</h3>
                         <button id="regenerateBtn" class="regenerate-btn" title="Generate another version">
-                            <span class="regenerate-icon"></span>🔄</span>
+                            <span class="regenerate-icon">🔄</span>
                             <span class="regenerate-text">Generate Another</span>
                         </button>
                     </div>
