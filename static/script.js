@@ -84,6 +84,7 @@ class CreativeGenerator {
         const authorLabel = document.getElementById('authorLabel');
         const authorHelp = document.getElementById('authorHelp');
         const lengthInput = document.getElementById('length');
+        const authorInput = document.getElementById('author');
         
         if (contentType === 'poem') {
             lengthLabel.textContent = 'Number of Lines';
@@ -95,6 +96,7 @@ class CreativeGenerator {
             
             authorLabel.textContent = 'Poet Style';
             authorHelp.textContent = 'Write in the style of this poet';
+            authorInput.placeholder = 'e.g., Robert Frost, Maya Angelou, William Shakespeare';
         } else {
             lengthLabel.textContent = 'Number of Words';
             lengthHelp.textContent = 'Recommended: 150-200 words for stories';
@@ -105,6 +107,7 @@ class CreativeGenerator {
             
             authorLabel.textContent = 'Author Style';
             authorHelp.textContent = 'Write in the style of this author';
+            authorInput.placeholder = 'e.g., Ernest Hemingway, Agatha Christie';
         }
     }
 
