@@ -26,7 +26,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Configure Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 class StoryRequest(BaseModel):
     topic: str
